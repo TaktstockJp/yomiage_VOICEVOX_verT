@@ -6,7 +6,7 @@ forked by タクト
 
 ## 概要
 
-DiscordのチャットをVOICEVOXおよび同等の仕様のWebAPIを利用して動作する音声合成ソフトウェアで読み上げるソフトです。
+Discordのチャットを「VOICEVOXおよび同等の仕様のWebAPIを利用して動作する音声合成ソフトウェア(COEIROINK等)」および「Ai.I.VOICE」で読み上げるソフトです。
 
 python読める＆python実行できる人向けです。
 
@@ -34,24 +34,22 @@ python読める＆python実行できる人向けです。
 5. **discordbot.py**
    - コマンドプロンプトから実行する場合はこちらを使ってください
 6. **setting.ini**
-   - 各種設定ファイルです。今のところ「使用するソフトウェアの名称と使用するポート番号の組」「デフォルト話者とスタイルの設定」「データファイルの場所」を設定できます。
-7. **TOKEN.txt**
-   - BOTのアクセストークンを保存するファイル
-8. **command_list.html**
+   - 各種設定ファイルです。今のところ「Botのトークン」「使用するソフトウェアの名称と使用するポート番号の組」「A.I.VOICEを使用するかどうか」「デフォルト話者とスタイルの設定」「データファイルの場所」を設定できます。
+7. **command_list.html**
    - 実装されているコマンドの確認
-9. **Synthax_setting.csv**
+8. **Synthax_setting.csv**
    - コマンドおよびコメントの先頭の文字を設定するファイル
-10. **for_developer**
+9. **for_developer**
    - ソースファイル
-11. **data**
+10. **data**
    - 単語帳などが保存されるファイル。開く必要はあまりないです。
-12. **get_speakers_from_VOICEVOX.bat**
+11. **get_speakers_from_VOICEVOX.bat**
    - VOICEVOXから話者の情報を取得するbatファイル。通常は編集する必要はありません。
-13. **output_json_from_VOICEVOX.bat**
+12. **output_json_from_VOICEVOX.bat**
    - VOICEVOXでjsonファイルを作成するbatファイル。通常は編集する必要はありません。
-14. **output_voice_from_VOICEVOX.bat**
+13. **output_voice_from_VOICEVOX.bat**
    - VOICEVOXで音声を作成するbatファイル。通常は編集する必要はありません。
-15. **tmp**
+14. **tmp**
    - 一時的に出力されるファイル（VOICEVOXで出力した音声ファイル等）が保存されます。開く必要は全くないです。
 
 ## 注意
@@ -73,7 +71,7 @@ python読める＆python実行できる人向けです。
    [このサイト](https://jp.videoproc.com/edit-convert/how-to-download-and-install-ffmpeg.htm)の"**1. WindowsでFFmpegをダウンロード＆インストールする方法（Windows10対応）**"を参考にしてください。
 
 3. pycord.py, PyNaClのインストール
-   コマンドプロンプト(Win+Rで"ファイル名を指定して実行"をひらいて"cmd"を打ち込んだら出てくると思います）上で以下のコマンドを打ち込んで実行してください。
+   コマンドプロンプト（Win+Rで"ファイル名を指定して実行"をひらいて"cmd"を打ち込んだら出てくると思います）上で以下のコマンドを打ち込んで実行してください。
 
    ```bash
    $ pip install git+https://github.com/Rapptz/discord.py
@@ -82,6 +80,9 @@ python読める＆python実行できる人向けです。
    
 4. VOICEVOXのインストール
    [このサイト](https://voicevox.hiroshiba.jp/)から最新版をダウンロードしてください。
+
+5. A.I.VOICEを使用する場合
+   setting.iniのUseAIVoiceをTrueにし、AIVoiceDirにA.I.VOICEのあるディレクトリを記述してください。
 
 
 ## 起動方法
@@ -104,11 +105,11 @@ python読める＆python実行できる人向けです。
 
 3. アクセストークンを設定する（すでに設定していたら省略）
 
-   TOKEN.txtをテキストエディタで開いて、2-4)でコピーしていたTOKENを保存してください。
+   setting.iniをテキストエディタで開いて、2-4)でコピーしていたTOKENをコピペしてください。
 
 4. VOICEVOXを起動します。
 
-4. コマンドプロンプトを起動します。 (Win+Rで"ファイル名を指定して実行"をひらいて"cmd"を打ち込んだら出てくると思います）
+4. コマンドプロンプトを起動します。 （Win+Rで"ファイル名を指定して実行"をひらいて"cmd"を打ち込んだら出てくると思います）
 
 7. チェンジディレクトリでこのフォルダの中身まで移動します。
    cd ディレクトリ名で移動できます。（https://eng-entrance.com/windows-command-cd を参照）例えば以下のようにする。
@@ -143,7 +144,7 @@ pyinstallerを使うので入ってない場合はインストールする。
 $ pip install pyinstaller
 ```
 
-以下のコマンドを打ち込んでexe化する(pyinstallerが使えない場合は環境変数の編集からPath[例）C:\Users\xxx\AppData\Roaming\Python\Python38\Scripts]を追加する）
+以下のコマンドを打ち込んでexe化する（pyinstallerが使えない場合は環境変数の編集からPath[例）C:\Users\xxx\AppData\Roaming\Python\Python38\Scripts]を追加する）
 
 ```bash
 $ pyinstaller for_developer/discordbot.spec
@@ -201,13 +202,14 @@ $ pyinstaller for_developer/discordbot.spec
    [SHAREVOX HP](https://www.sharevox.app/) <br>
    [ITVOICE HP](https://booth.pm/ja/items/4374126) <br>
    [東北ずん子利用の手引き](https://zunko.jp/guideline.html)<br>
+   [A.I.VOICE Editor API利用規約](https://aivoice.jp/manual/editor/api.html#termsandconditions)
    
 4. 本ソフトウェアにより生じた損害・不利益について、製作者は一切の責任を負いません。
 
 5. 改善して欲しい点などあれば言ってください。
    ある程度リクエストは受け付けたいと思っていますが、製作者に技術がないのであまり期待しないでください。
 
-6. 何かあれば[改変者のTwitter](https://twitter.com/Taktstock_mov)まで<br>
+6. 何かあれば改変者の[Twitter](https://twitter.com/Taktstock_mov)か[Misskey](https://misskey.io/@Taktstock_mov)まで<br>
 
 ## 更新履歴
 
@@ -251,7 +253,7 @@ $ pyinstaller for_developer/discordbot.spec
 
 - 20211206(かみみや)
 
-  readme.mdの更新。(機能紹介とかなしみ欄を追加した）
+  readme.mdの更新。（機能紹介とかなしみ欄を追加した）
 
   ボイスチャンネルの接続人数の確認
 
@@ -381,3 +383,19 @@ $ pyinstaller for_developer/discordbot.spec
   ロールに対するメンションが正しく読み上げられない不具合を修正
 
   ユーザーIDに紐づいているボイススタイルが利用できない時、直前に生成したwavファイルが再生されてしまう不具合を修正し、デフォルトスタイルで読み上げるように変更
+
+- 20230327(タクト)
+
+  APIの仕様変更に対応
+
+- 20230516(タクト)
+
+  A.I.VOICEに対応
+
+  スタイル毎のパラメータ周りについて内部的な仕様変更をした
+
+  異なるソフトウェアにキャラ名とスタイル名が同じボイスが存在する場合にそれぞれ別のパラメータを適用できるように修正
+
+  上記の影響でstyle_setting.csvの記述が変更（前バージョンのものは多分そのまま使えます）
+
+  TOKEN.txtをsetting.iniに統合

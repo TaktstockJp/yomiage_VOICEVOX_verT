@@ -17,7 +17,7 @@
             <h1>yomiage_VOICEVOX_verT(20221225版)__Readme</h1>
       </div>
       <h2>概要</h2>
-      <p>DiscordのチャットをVOICEVOXで読み上げるソフトです。<br>コマンド一覧は<a href="command_list.html">command_list.html</a>を参照してください。</p>
+      <p>DiscordのチャットをVOICEVOXやA.I.VOICEで読み上げるソフトです。<br>コマンド一覧は<a href="command_list.html">command_list.html</a>を参照してください。</p>
 
       <h2>機能紹介</h2>
       <ul>
@@ -44,11 +44,23 @@
             <dd>使用するソフトウェアとポート番号の組、デフォルト話者とスタイルの設定、設定ファイルのロケーションが記載されたファイルです。<br>
                 <ol>
                   <li>
+                        [Token Setting]セクション<br>
+                        利用するDiscord Botのトークンを記載してください。
+                  </li>
+                  <li>
                         [Using Setting]セクション<br>
                         使用するソフトウェアとポート番号の組が記載されています。<br>
                         使用したいソフトがある場合は、先頭の # を削除してコメントアウトを解除してください。<br>
                         逆に使用したくないソフトがある場合は、先頭に # を付加してコメントアウトしてください。<br>
                         記載のないソフトウェアでも、WebAPIのポート番号が分かれば、そのソフトウェアとポート番号の組を入力すれば動きます。
+                  </li>
+                  <li>
+                        [A.I.VOICE Setting]セクション<br>
+                        A.I.VOICEを利用するかどうかを設定します。
+                        <ul>
+                              <li>UseAIVoice : A.I.VOICEを利用するかどうかをTrueかFalseで記載してください。</li>
+                              <li>AIVoiceDir : aivoice.exeのあるディレクトリをフルパスで指定してください。</li>
+                        </ul>
                   </li>
                   <li>
                         [Default Value Setting]セクション<br>
@@ -70,8 +82,6 @@
                         </ul>
                   </li>
                 </ol></dd>
-            <dt>TOKEN.txt</dt>
-            <dd>BOTのアクセストークンを保存するファイル</dd>
             <dt>command_list.html</dt>
             <dd>実装されているコマンドリスト</dd>
             <dt>Synthax_setting.csv</dt>
@@ -188,6 +198,7 @@
                   <li><a href="https://www.sharevox.app/terms">SHAREVOX利用規約</a></li>
                   <li><a href="https://www.sharevox.app/characters">SHAREVOX キャラクターページ</a></li>
                   <li><a href="https://booth.pm/ja/items/4374126">ITVOICE 配布ページ</a>(利用規約に関する記述があります)</li>
+                  <li><a href="https://aivoice.jp/manual/editor/api.html#termsandconditions">A.I.VOICE Editor API利用規約</a></li>
             </ol>
             <li>本ソフトウェアにより生じた損害・不利益について、製作者は一切の責任を負いません。</li>
             <li>このバージョンは改変版です。改善して欲しい点などあれば<a href="https://twitter.com/Taktstock_mov">改変者のTwitter</a>で言ってください。</li>
@@ -318,10 +329,18 @@
                   setting.iniの[Using Setting]セクションの記法を変更<br>
                   readmeから現在のバージョンで実装されていないSE関連の文言を削除<br>
             </dd>
+            <dt>verT-20230327</dt>
+            <dd>
+                  APIの仕様変更に対応<br>
+            </dd>
+            <dt>verT-20230516</dt>
+            <dd>
+                  A.I.VOICEに対応<br>
+                  スタイル毎のパラメータ周りについて内部的な仕様変更をした<br>
+                  異なるソフトウェアにキャラ名とスタイル名が同じボイスが存在する場合にそれぞれ別のパラメータを適用できるように修正<br>
+                  上記の影響でstyle_setting.csvの記述が変更（前バージョンのものは多分そのまま使えます）<br>
+                  TOKEN.txtをsetting.iniに統合<br>
+            </dd>
       </dl>
-
-
-
-
 </body>
 </html>

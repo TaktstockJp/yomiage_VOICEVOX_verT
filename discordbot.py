@@ -3,7 +3,6 @@ from asyncio.windows_events import NULL
 import discord
 from discord import app_commands
 from discord.ext import tasks, commands
-import csv
 import sys
 import re
 from datetime import datetime
@@ -65,9 +64,9 @@ async def wlist_show(interaction:discord.Interaction):
     await interaction.response.send_message(file=await room_info_tmp.execute_wlist_show())
 
 @group.command(description='ボイススタイル毎のパラメータを変更します')
-@app_commands.describe(name='話者名', style='スタイル名', parameter='パラメータ名(speed,pitch,intonation,volumeのいずれか)', value='変更後の値(speedは0.5～2.0,pitchは-0.15～0.15),intonationとvolumeは0.0～2.0')
-async def chg_voice_setting(interaction:discord.Interaction, name:str, style:str, parameter:str, value:str):
-    await interaction.response.send_message(await room_info_tmp.execute_chg_voice_setting(name, style, parameter, value))
+@app_commands.describe(software='ソフト名', name='話者名', style='スタイル名', parameter='パラメータ名(speed,pitch,intonation,volumeのいずれか)', value='変更後の値(ソフトとパラメータによって指定可能な値は異なる)')
+async def chg_voice_setting(interaction:discord.Interaction, software:str, name:str, style:str, parameter:str, value:str):
+    await interaction.response.send_message(await room_info_tmp.execute_chg_voice_setting(software, name, style, parameter, value))
 
 @group.command(description='使用可能なボイススタイルの一覧を表示します')
 async def show_speakers(interaction:discord.Interaction):

@@ -11,7 +11,7 @@ import sys
 import traceback
 import configparser
 from for_developer.discordbot_setting import *
-from for_developer.voice_generator import VoiceVoxVoiceGenerator
+from for_developer.voice_generator import VoiceVoxVoiceGenerator, AIVoiceVoiceGenerator
 
 # 関数の定義
 # 以下、引数のmessage_tmpはdiscord.message型を入れる。
@@ -72,7 +72,6 @@ class room_information():
         # 各種リスト
         self.generators = {}  # 使用するソフトウェアとその情報
         self.voice_dict = {}  # 使用ボイスの管理
-        self.style_setting_dict = {} # スタイル別各種設定の管理
         self.word_dict = {}  # 単語帳の管理
         self.flag_valid_dict = {command_inform_someone_come: inform_someone_come, command_inform_tmp_room: inform_tmp_room,
                                 command_time_signal: time_signal,
@@ -112,28 +111,17 @@ class room_information():
 
     # sentenceで得たメッセージをVOICEVOXで音声ファイルに変換しそれを再生する
     def play_voice(self, sentence, message_tmp):
-        # チャットの内容をutf-8でエンコードする
-        text = sentence.encode('utf-8')
-
-        # HTTP POSTで投げられるように形式を変える
-        arg = ''
-        for item in text:
-            arg += '%'
-            arg += hex(item)[2:].upper()
-
         # batファイルを呼び起こしてwavファイルを作成する
         try:
             if message_tmp.author.id in self.voice_dict.keys():
                 voice_data = self.voice_dict.get(message_tmp.author.id)
-                parameter_dict = self.style_setting_dict[(voice_data[1], voice_data[2])]
-                self.generators[voice_data[0]].generate(voice_data[1], voice_data[2], arg, parameter_dict)
+                self.generators[voice_data[0]].generate(voice_data[1], voice_data[2], sentence)
             else:
-                parameter_dict = self.style_setting_dict[(self.default_speaker, self.default_style)]
-                self.generators[self.default_generator].generate(self.default_speaker, self.default_style, arg, parameter_dict)
+                self.generators[self.default_generator].generate(self.default_speaker, self.default_style, sentence)
         except KeyError:
             # ユーザーが指定しているスタイルが辞書に存在しない場合
-            parameter_dict = self.style_setting_dict[(self.default_speaker, self.default_style)]
-            self.generators[self.default_generator].generate(self.default_speaker, self.default_style, arg, parameter_dict)
+            self.generators[self.default_generator].generate(self.default_speaker, self.default_style, sentence)
+            traceback.print_exc()
         except Exception as e:
             print(type(e))
             traceback.print_exc()
@@ -218,35 +206,52 @@ class room_information():
             print(ini.get('Using Setting', k))
             self.createVoiceVoxGenerator(k, ini.get('Using Setting', k))
         
+        # A.I.VOICEのセッティング
+        if ini.get('A.I.VOICE Setting', 'UseAIVoice').lower() == 'true':
+            self.createAIVoiceGenerator(ini.get('A.I.VOICE Setting', 'AIVoiceDir'))
+
         if not any(self.generators):
             print("音声合成ソフトウェアの初期化に失敗しました。プログラムを終了します。")
             sys.exit(1)
 
         # スタイルごとの情報の読み取り
-        # TODO そのうちスタイル別にオブジェクトを持たせ、ここでは管理しないようにする
+        tmp_style_setting_dict = {}
+        migrate_style_setting_dict = {}
         with open(self.style_setting_file, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             for row in reader:
-                if not row or row[0] == 'name':
+                if not row or row[0] == 'software' or row[0] == 'name':
                     continue
-                
-                parameter_dict = {}
-                parameter_dict['speed'] = float(row[2])
-                parameter_dict['pitch'] = float(row[3])
-                parameter_dict['intonation'] = float(row[4])
-                parameter_dict['volume'] = float(row[5])
-                self.style_setting_dict[(row[0], row[1])] = parameter_dict
-            
+                    
+                if len(row) == 7:
+                    parameter_dict = {}
+                    parameter_dict['speed'] = float(row[3])
+                    parameter_dict['pitch'] = float(row[4])
+                    parameter_dict['intonation'] = float(row[5])
+                    parameter_dict['volume'] = float(row[6])
+                    tmp_style_setting_dict[(row[0], row[1], row[2])] = parameter_dict
+                elif len(row) == 6:
+                    parameter_dict = {}
+                    parameter_dict['speed'] = float(row[2])
+                    parameter_dict['pitch'] = float(row[3])
+                    parameter_dict['intonation'] = float(row[4])
+                    parameter_dict['volume'] = float(row[5])
+                    migrate_style_setting_dict[(row[0], row[1])] = parameter_dict
+        
+        # 各スタイルのパラメータの適用
         for generator in self.generators.values():
             for speaker in generator.getSpeakersDict().values():
                 for style_name in speaker.getStylesDict().keys():
-                    if not (speaker.getName(), style_name) in self.style_setting_dict.keys():
-                        parameter_dict = {}
-                        parameter_dict['speed'] = 1.2
-                        parameter_dict['pitch'] = 0.0
-                        parameter_dict['intonation'] = 1.0
-                        parameter_dict['volume'] = 1.0
-                        self.style_setting_dict[(speaker.getName(), style_name)] = parameter_dict
+                    if (generator.getName(), speaker.getName(), style_name) in tmp_style_setting_dict.keys():
+                        generator.setSpeed(speaker.getName(), style_name, tmp_style_setting_dict[(generator.getName(), speaker.getName(), style_name)]['speed'])
+                        generator.setPitch(speaker.getName(), style_name, tmp_style_setting_dict[(generator.getName(), speaker.getName(), style_name)]['pitch'])
+                        generator.setIntonation(speaker.getName(), style_name, tmp_style_setting_dict[(generator.getName(), speaker.getName(), style_name)]['intonation'])
+                        generator.setVolume(speaker.getName(), style_name, tmp_style_setting_dict[(generator.getName(), speaker.getName(), style_name)]['volume'])
+                    elif (speaker.getName(), style_name) in migrate_style_setting_dict.keys():
+                        generator.setSpeed(speaker.getName(), style_name, migrate_style_setting_dict[(speaker.getName(), style_name)]['speed'])
+                        generator.setPitch(speaker.getName(), style_name, migrate_style_setting_dict[(speaker.getName(), style_name)]['pitch'])
+                        generator.setIntonation(speaker.getName(), style_name, migrate_style_setting_dict[(speaker.getName(), style_name)]['intonation'])
+                        generator.setVolume(speaker.getName(), style_name, migrate_style_setting_dict[(speaker.getName(), style_name)]['volume'])
 
         self.writeStyleSettingDict()
 
@@ -257,21 +262,7 @@ class room_information():
                 if not row:
                     continue
 
-                if len(row) == 2:
-                    # voice_dictの行の要素数が2、つまりかみみやさんのバージョンの場合
-                    # デフォルトソフトウェアの話者のIDから、話者名とスタイル名を取得する
-                    # 見つからなかった場合や例外が発生した場合はデフォルト話者を設定しておく
-                    try:
-                        speaker_with_id = self.generators[self.default_generator].getSpeakerWithStyleId(int(row[1]))
-                        if not speaker_with_id is None:
-                            self.voice_dict[int(row[0])] = [self.default_generator, speaker_with_id.getName(), speaker_with_id.getStyleNameWithId(int(row[1]))]
-                        else:
-                            self.voice_dict[int(row[0])] = [self.default_generator, self.default_speaker, self.default_style]
-                    except Exception as e:
-                        print(type(e))
-                        traceback.print_exc()
-                        self.voice_dict[int(row[0])] = [self.default_generator, self.default_speaker, self.default_style]
-                elif len(row) == 4:
+                if len(row) == 4:
                     self.voice_dict[int(row[0])] = [row[1], row[2], row[3]]
                 else:
                     continue
@@ -310,6 +301,17 @@ class room_information():
         except Exception as e:
             print(name + "の初期化に失敗しました。")
             print(name + "が起動されていない可能性があります。")
+            print(type(e))
+            traceback.print_exc()
+    
+    # A.I.VOICEのオブジェクトを作成してgeneratorsに格納する
+    # エラー時にgeneratorsにオブジェクトを格納させないためのコンストラクタのラッパ
+    def createAIVoiceGenerator(self, aivoiceDir:str):
+        try:
+            tmpAVGenerator = AIVoiceVoiceGenerator(aivoiceDir)
+            self.generators['A.I.VOICE'] = tmpAVGenerator
+        except Exception as e:
+            print('A.I.VOICEの初期化に失敗しました。')
             print(type(e))
             traceback.print_exc()
 
@@ -430,11 +432,19 @@ class room_information():
     def writeStyleSettingDict(self):
         with open(self.style_setting_file, 'w', encoding='utf-8') as f:
             writer = csv.writer(f, lineterminator='\n')
-            writer.writerow(['name', 'style', 'speed', 'pitch', 'intonation', 'volume'])
-            for k, v in self.style_setting_dict.items():
-                tmp_list = list(k)
-                tmp_list += [str(v['speed']), str(v['pitch']), str(v['intonation']), str(v['volume'])]
-                writer.writerow(tmp_list)
+            writer.writerow(['software', 'name', 'style', 'speed', 'pitch', 'intonation', 'volume'])
+            for generator in self.generators.values():
+                for speaker in generator.getSpeakersDict().values():
+                    for style in speaker.getStylesDict().values():
+                        writer.writerow(
+                            [generator.getName(), 
+                             speaker.getName(), 
+                             style.getStyleName(), 
+                             str(style.getSpeed()), 
+                             str(style.getPitch()), 
+                             str(style.getIntonation()), 
+                             str(style.getVolume())]
+                        )
     
     async def execute_join(self, voiceChannel:discord.VoiceChannel, textChannel:discord.TextChannel, guild_id:int):
         # コマンドの実行者がいるボイスチャンネルに接続
@@ -515,51 +525,37 @@ class room_information():
     async def execute_wlist_show(self) -> discord.File:
         return discord.File(self.wlist_file)
     
-    async def execute_chg_voice_setting(self, speaker_name:str, style_name:str, parameter_name:str, value:str) -> str:
+    async def execute_chg_voice_setting(self, software_name:str, speaker_name:str, style_name:str, parameter_name:str, value:str) -> str:
         # 引数のどれかが空かNoneの場合エラー
-        if not speaker_name or not style_name or not parameter_name or not value:
-            return comment_Synthax + command_chg_voice_setting + " 話者名 スタイル名 変更するパラメータ 変更後の値 と入力してください\n" +\
+        if not software_name or not speaker_name or not style_name or not parameter_name or not value:
+            return comment_Synthax + command_chg_voice_setting + " ソフトウェア名 話者名 スタイル名 変更するパラメータ 変更後の値 と入力してください\n" +\
                    comment_Synthax + "変更するパラメータには speed, pitch, intonation, volume が指定できます"
         
-        # スタイル情報辞書に話者とスタイルの組み合わせが存在しない場合エラー
-        if not (speaker_name, style_name) in self.style_setting_dict.keys():
-            return comment_Synthax + "指定された話者とスタイルの組み合わせが存在しません"
+        # ソフトウェア名チェック
+        if not software_name in self.generators.keys():
+            return comment_Synthax + "指定されたソフトウェア名が存在しません。"
 
         # 各種状態の変更
         try:
+            ret = ""
+            generator = self.generators[software_name]
             value_tmp = '{:3}'.format(value)
             if parameter_name.lower() == 'speed':
-                if float(value_tmp) < 0.5 or 2.0 < float(value_tmp):
-                    return comment_Synthax + 'speedは0.5から2.0の範囲で指定してください'
-                else:
-                    self.style_setting_dict[(speaker_name, style_name)]['speed'] = float(value_tmp)
-                    self.writeStyleSettingDict()
-                    return comment_Synthax + speaker_name + " " + style_name + "の読み上げスピードを" + value + 'に設定しました'
+                ret = comment_Synthax + generator.setSpeed(speaker_name, style_name, float(value_tmp))
             elif parameter_name.lower() == 'pitch':
-                if float(value_tmp) < -0.15 or 0.15 < float(value_tmp):
-                    return comment_Synthax + 'pitchは-0.15から0.15の範囲で指定してください'
-                else:
-                    self.style_setting_dict[(speaker_name, style_name)]['pitch'] = float(value_tmp)
-                    self.writeStyleSettingDict()
-                    return comment_Synthax + speaker_name + " " + style_name + "の音高を" + value + 'に設定しました'
+                ret = comment_Synthax + generator.setPitch(speaker_name, style_name, float(value_tmp))
             elif parameter_name.lower() == 'intonation':
-                if float(value_tmp) < 0.0 or 2.0 < float(value_tmp):
-                    return comment_Synthax + 'intonationは0.0から2.0の範囲で指定してください'
-                else:
-                    self.style_setting_dict[(speaker_name, style_name)]['intonation'] = float(value_tmp)
-                    self.writeStyleSettingDict()
-                    return comment_Synthax + speaker_name + " " + style_name + "の抑揚を" + value + 'に設定しました'
+                ret = comment_Synthax + generator.setIntonation(speaker_name, style_name, float(value_tmp))
             elif parameter_name.lower() == 'volume':
-                if float(value_tmp) < 0.0 or 2.0 < float(value_tmp):
-                    return comment_Synthax + 'volumeは0.0から2.0の範囲で指定してください'
-                else:
-                    self.style_setting_dict[(speaker_name, style_name)]['volume'] = float(value_tmp)
-                    self.writeStyleSettingDict()
-                    return comment_Synthax + speaker_name + " " + style_name + "の音量を" + value + 'に設定しました'
+                ret = comment_Synthax + generator.setVolume(speaker_name, style_name, float(value_tmp))
             else:
-                return comment_Synthax + "変更するパラメータには speed, pitch, intonation, volume を指定してください"
-
+                ret = comment_Synthax + "変更するパラメータには speed, pitch, intonation, volume を指定してください"
+            self.writeStyleSettingDict()
+            return ret
         except ValueError:
+            return comment_dict['message_err']
+        except Exception:
+            traceback.print_exc()
             return comment_dict['message_err']
     
     async def execute_show_speakers(self) -> str:

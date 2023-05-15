@@ -1,6 +1,6 @@
 前バージョンのyomiage_VOICEVOXのうち
 1.data
-2.TOKEN.txt
-3.Synthax_setting.csv
-4.generator_setting.ini(ある場合)
+2.Synthax_setting.csv
 をこのファイルに上書き保存する。
+その後、新旧のsetting.iniを開き、
+前バージョンと記述が同様の部分はコピペして書き換える。

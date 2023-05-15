@@ -1,13 +1,15 @@
 import csv
+import configparser
 
 TOKEN_file = 'TOKEN.txt' # 自分のBotのアクセストークン
 Synthax_file = 'Synthax_setting.csv' # 自分のBotのアクセストークン
-voibox_version = 'verT-20221215'
+voibox_version = 'verT-20230515'
 
 # アクセストークンの読み取り
-with open(TOKEN_file,'r', encoding='utf-8') as f:
-      TOKEN = f.read()
-      f.close()
+ini = configparser.ConfigParser()
+ini.optionxform = str
+ini.read('./setting.ini', 'UTF-8')
+TOKEN = ini.get('Token Setting', 'Token')
 
 # Synthax情報を読み込む
 with open(Synthax_file, 'r', encoding='utf-8') as f:
@@ -26,8 +28,8 @@ with open(Synthax_file, 'r', encoding='utf-8') as f:
                   slash_Synthax = row[1]
 
 # VOICEVOX音声再生（.bat）ファイルへのパス
-bat_json = "output_json_from_VOICEVOX.bat"   
-bat_voice = "output_voice_from_VOICEVOX.bat"   
+bat_json = "output_json_from_VOICEVOX.bat"
+bat_voice = "output_voice_from_VOICEVOX.bat"
 
 # VOICEVOX情報取得（.bat）ファイルへのパス
 bat_speakers = "get_speakers_from_VOICEVOX.bat"
@@ -138,10 +140,10 @@ help_message = "```"+\
                        "Aは話者名、Bはスタイル名です。show_speakersコマンドからご確認ください。\n" +\
                        "Cはソフトウェア名です。オプションなので入れなくてもいいです。\n" +\
                        "複数のソフトウェアに、話者名とスタイル名が同一のキャラクターが実装されている場合にお使いください。\n" +\
-                       command_Synthax + "chg_voice_setting: スタイル毎の話速などの変更。!chg_speed A B C D \n" +\
-                       "Aは話者名、Bはスタイル名です。show_speakersコマンドからご確認ください。\n" +\
-                       "Cは speed pitch intonation volume のいずれか。それぞれ話速・音高・抑揚・音量。に対応。\n" +\
-                       "Dはspeedの場合0.5～2.0、pitchの場合-0.15～0.15、intonationとvolumeの場合0.0～2.0を入力してください。\n\n" +\
+                       command_Synthax + "chg_voice_setting: スタイル毎の話速などの変更。!chg_speed A B C D E\n" +\
+                       "Aはソフトウェア名、Bは話者名、Cはスタイル名です。show_speakersコマンドからご確認ください。\n" +\
+                       "Dはspeed pitch intonation volume のいずれか。それぞれ話速・音高・抑揚・音量。に対応。\n" +\
+                       "Eはソフトウェア・パラメータの種類によって入力可能な値の範囲が異なります。\n\n" +\
                        "■各種設定 \n" +\
                        command_Synthax + "inform_tmp_room: botが入室しているボイスチャンネル名の表示オンオフ。 \n" + \
                        command_Synthax + "inform_someone_come: 入退出通知のオンオフ。 \n" + \
