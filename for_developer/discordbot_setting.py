@@ -3,7 +3,7 @@ import configparser
 
 TOKEN_file = 'TOKEN.txt' # 自分のBotのアクセストークン
 Synthax_file = 'Synthax_setting.csv' # 自分のBotのアクセストークン
-voibox_version = 'verT-20230515'
+voibox_version = 'verT-20230518'
 
 # アクセストークンの読み取り
 ini = configparser.ConfigParser()

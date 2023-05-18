@@ -198,6 +198,7 @@ class AIVoiceVoiceGenerator(AbstractVoiceGenerator):
         self.tts_control = TtsControl()
         host_name = self.tts_control.GetAvailableHostNames()[0]
         self.tts_control.Initialize(host_name)
+        self.statusNotConnected = HostStatus.NotConnected
 
         # エディタの起動
         if self.tts_control.Status == HostStatus.NotRunning:
@@ -241,6 +242,10 @@ class AIVoiceVoiceGenerator(AbstractVoiceGenerator):
         print(self.getSpeakersStr())
     
     def generate(self, character_name:str, style_name:str, query:str):
+        # 接続の確認
+        if self.tts_control.Status == self.statusNotConnected:
+            self.tts_control.Connect()
+
         character = self.speakers[character_name]
         style = character.getStyle(style_name)
         style_str = style.getStyleId()

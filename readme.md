@@ -6,7 +6,7 @@ forked by タクト
 
 ## 概要
 
-Discordのチャットを「VOICEVOXおよび同等の仕様のWebAPIを利用して動作する音声合成ソフトウェア(COEIROINK等)」および「Ai.I.VOICE」で読み上げるソフトです。
+Discordのチャットを「VOICEVOXおよび同等の仕様のWebAPIを利用して動作する音声合成ソフトウェア(COEIROINK等)」および「A.I.VOICE」で読み上げるソフトです。
 
 python読める＆python実行できる人向けです。
 
@@ -399,3 +399,7 @@ $ pyinstaller for_developer/discordbot.spec
   上記の影響でstyle_setting.csvの記述が変更（前バージョンのものは多分そのまま使えます）
 
   TOKEN.txtをsetting.iniに統合
+
+- 20230518(タクト)
+
+  A.I.VOICEのコネクションタイムアウトが考慮されていない不具合の修正
