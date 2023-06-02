@@ -107,7 +107,7 @@ python読める＆python実行できる人向けです。
 4. アクセストークン等を設定する（すでに設定していたら省略）
 
    setting.iniをテキストエディタで開いて、2-4)でコピーしていたTOKENをコピペしてください。
-   A.I.VOICEを利用する場合、[A.I.VOICE Setting]UseAIVoiceをTrueにし、AIVoiceDirにAIVOICE.exeがあるディレクトリを指定してください。
+   A.I.VOICEを利用する場合、[A.I.VOICE Setting]のUseAIVoiceをTrueにし、AIVoiceDirにAIVoiceEditor.exeがあるディレクトリを指定してください。
 
 5. VOICEVOXを起動します。
 
