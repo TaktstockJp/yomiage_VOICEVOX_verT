@@ -430,6 +430,12 @@ class room_information():
                 writer.writerow(tmpList)
     
     def writeStyleSettingDict(self):
+        tmp_arr = []
+        with open(self.style_setting_file, 'r', encoding='utf-8') as f:
+            for l in f.read().splitlines():
+                if not l or 'name' not in l:
+                    tmp_arr.append(l)
+
         with open(self.style_setting_file, 'w', encoding='utf-8') as f:
             writer = csv.writer(f, lineterminator='\n')
             writer.writerow(['software', 'name', 'style', 'speed', 'pitch', 'intonation', 'volume'])
@@ -445,6 +451,10 @@ class room_information():
                              str(style.getIntonation()), 
                              str(style.getVolume())]
                         )
+                    tmp_arr = [l for l in tmp_arr if speaker.getName() not in l and style.getStyleName() not in l]
+            
+            for l in tmp_arr:
+                writer.writerow(l.split(","))
     
     async def execute_join(self, voiceChannel:discord.VoiceChannel, textChannel:discord.TextChannel, guild_id:int):
         # コマンドの実行者がいるボイスチャンネルに接続
