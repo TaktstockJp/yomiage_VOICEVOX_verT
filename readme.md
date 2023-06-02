@@ -70,12 +70,13 @@ python読める＆python実行できる人向けです。
 2. ffmpegのインストール
    [このサイト](https://jp.videoproc.com/edit-convert/how-to-download-and-install-ffmpeg.htm)の"**1. WindowsでFFmpegをダウンロード＆インストールする方法（Windows10対応）**"を参考にしてください。
 
-3. pycord.py, PyNaClのインストール
+3. discord.py, PyNaCl, pythonnetのインストール
    コマンドプロンプト（Win+Rで"ファイル名を指定して実行"をひらいて"cmd"を打ち込んだら出てくると思います）上で以下のコマンドを打ち込んで実行してください。
 
    ```bash
    $ pip install git+https://github.com/Rapptz/discord.py
    $ pip install PyNaCl
+   $ pip install pythonnet
    ```
    
 4. VOICEVOXのインストール
@@ -94,22 +95,23 @@ python読める＆python実行できる人向けです。
 
 3. DiscordのBotを作成し、招待します。（すでにチャットルームにBotを招待している場合は省略）[このサイト](https://note.com/exteoi/n/nf1c37cb26c41)の**1. Discord上のBotの作成**にある記述を参考にしてください。
 
-   1. https://discord.com/developers/applications を開きます。
-   2. 右上にあるNew Applicationを押す。適当な名前を入れてCreateを押します。
-   3. 管理画面が開かれる。左のメニューのBotを押し、Add Botを押す。→Yes, do it!を選択（開かれない場合はDeveloper Portalから作成したアプリケーションを選択する）
-   4. するとBuild-A-Botのところになんか出てくる。そのTOKENのところにあるCopyを押すとBotのTOKENがコピーできる。**のちに必要となるので保存しておく。**
-   5. **そのしたのPUBLIC BOT, REQUIRES OAUTH2 CODE GRANTをオフ、Presence Intent, Server Members Intent, MESSAGE CONTENT INTENTという項目をオンにする。(灰色がオフ、青色がオン）**
-   6. 左のメニューのOAuth2→URL Generatorを開きます。 SCOPESでbotにチェックを入れます。
-   7. BOT PERMISSIONSという項目が出てくると思うのでRead Messages/ViewChannels, Send Messages, Connect, Speak, Use Slash Commands(スラッシュコマンドを利用する場合)にチェックを入れてください。
-   8. 一番下にあるGENERATED URLにあるリンクを開くとサーバー招待画面が出てくるので、追加したいサーバーを選択して認証します 。
+   1. https://discord.com/developers/applications を開く。
+   2. 右上にあるNew Applicationを押す。適当な名前を入れてCreateを押す。
+   3. 管理画面が開かれる。左のメニューのBotを押し、Reset Tokenを押す。→Yes, do it!を選択（開かれない場合はDeveloper Portalから作成したアプリケーションを選択する）
+   4. するとBuild-A-BotのところにTOKENの文字列が出てくる。下にあるCopyを押すとBotのTOKENがコピーできる。**のちに必要となるので保存しておく。**
+   5. **その下のREQUIRES OAUTH2 CODE GRANTをオフ、Presence Intent, Server Members Intent, MESSAGE CONTENT INTENTという項目をオンにする。(灰色がオフ、青色がオン）** PUBLIC BOTは自分が運営するサーバーに導入する場合はオフでよいが、自分以外が運営するサーバーに招待する場合はオンにしておく。
+   6. 左のメニューのOAuth2→URL Generatorを開き、SCOPESでbotにチェックを入れる。
+   7. BOT PERMISSIONSという項目が出てくると思うのでRead Messages/ViewChannels, Send Messages, Connect, Speak, Use Slash Commands(スラッシュコマンドを利用する場合)にチェックを入れる。
+   8. 一番下にあるGENERATED URLにあるリンクを開くとサーバー招待画面が出てくるので、追加したいサーバーを選択して認証する。
 
-3. アクセストークンを設定する（すでに設定していたら省略）
+4. アクセストークン等を設定する（すでに設定していたら省略）
 
    setting.iniをテキストエディタで開いて、2-4)でコピーしていたTOKENをコピペしてください。
+   A.I.VOICEを利用する場合、[A.I.VOICE Setting]UseAIVoiceをTrueにし、AIVoiceDirにAIVOICE.exeがあるディレクトリを指定してください。
 
-4. VOICEVOXを起動します。
+5. VOICEVOXを起動します。
 
-4. コマンドプロンプトを起動します。 （Win+Rで"ファイル名を指定して実行"をひらいて"cmd"を打ち込んだら出てくると思います）
+6. コマンドプロンプトを起動します。 （Win+Rで"ファイル名を指定して実行"をひらいて"cmd"を打ち込んだら出てくると思います）
 
 7. チェンジディレクトリでこのフォルダの中身まで移動します。
    cd ディレクトリ名で移動できます。（https://eng-entrance.com/windows-command-cd を参照）例えば以下のようにする。
@@ -147,7 +149,7 @@ $ pip install pyinstaller
 以下のコマンドを打ち込んでexe化する（pyinstallerが使えない場合は環境変数の編集からPath[例）C:\Users\xxx\AppData\Roaming\Python\Python38\Scripts]を追加する）
 
 ```bash
-$ pyinstaller for_developer/discordbot.spec
+$ pyinstaller discordbot.py --onefile
 ```
 
 成功したら**dist**というファイルが生成され、そのなかにdiscordbot.exeがある。
