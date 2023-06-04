@@ -11,7 +11,7 @@ import sys
 import traceback
 import configparser
 from for_developer.discordbot_setting import *
-from for_developer.voice_generator import VoiceVoxVoiceGenerator, AIVoiceVoiceGenerator
+from for_developer.voice_generator import *
 
 # 関数の定義
 # 以下、引数のmessage_tmpはdiscord.message型を入れる。
@@ -210,6 +210,10 @@ class room_information():
             print(ini.get('Using Setting', k))
             self.createVoiceVoxGenerator(k, ini.get('Using Setting', k))
         
+        # COEIROINKv2のセッティング
+        if ini.get('COEIROINKv2 Setting', 'UseCOEIROINKv2').lower() == 'true':
+            self.createCoeiroinkV2Generator()
+
         # A.I.VOICEのセッティング
         if ini.get('A.I.VOICE Setting', 'UseAIVoice').lower() == 'true':
             self.createAIVoiceGenerator(ini.get('A.I.VOICE Setting', 'AIVoiceDir'))
@@ -308,6 +312,17 @@ class room_information():
             print(type(e))
             traceback.print_exc()
     
+    # COEIROINKv2のオブジェクトを作成してgeneratorsに格納する
+    # エラー時にgeneratorsにオブジェクトを格納させないためのコンストラクタのラッパ
+    def createCoeiroinkV2Generator(self):
+        try:
+            tmpCv2Generator = CoeiroinkV2VoiceGenerator()
+            self.generators['COEIROINKv2'] = tmpCv2Generator
+        except Exception as e:
+            print('COEIROINKv2の初期化に失敗しました。')
+            print(type(e))
+            traceback.print_exc()
+
     # A.I.VOICEのオブジェクトを作成してgeneratorsに格納する
     # エラー時にgeneratorsにオブジェクトを格納させないためのコンストラクタのラッパ
     def createAIVoiceGenerator(self, aivoiceDir:str):

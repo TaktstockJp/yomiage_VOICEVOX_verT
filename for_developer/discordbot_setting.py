@@ -27,12 +27,14 @@ with open(Synthax_file, 'r', encoding='utf-8') as f:
             elif row[0] == 'slash_Synthax':
                   slash_Synthax = row[1]
 
-# VOICEVOX音声再生（.bat）ファイルへのパス
-bat_json = "output_json_from_VOICEVOX.bat"
-bat_voice = "output_voice_from_VOICEVOX.bat"
+# VOICEVOX用のbatファイルのパス
+bat_json = "bat\output_json_from_VOICEVOX.bat"
+bat_voice = "bat\output_voice_from_VOICEVOX.bat"
+bat_speakers = "bat\get_speakers_from_VOICEVOX.bat"
 
-# VOICEVOX情報取得（.bat）ファイルへのパス
-bat_speakers = "get_speakers_from_VOICEVOX.bat"
+# COEIROINK用のbatファイルのパス
+bat_voice_cv2 = "bat\output_voice_from_COEIROINKv2.bat"
+bat_speakers_cv2 = "bat\get_speakers_from_COEIROINKv2.bat"
 
 #各種ファイルへのパス(discordbot.pyからみた相対パス)
 voice_file = "tmp/tmp_voice.wav"              # VOICEVOX音声の保存先

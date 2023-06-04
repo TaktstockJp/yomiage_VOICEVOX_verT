@@ -79,6 +79,11 @@ class VoiceVoxVoiceSpeaker(AbstractVoiceSpeaker):
         
         return None
 
+class CoeiroinkV2VoiceSpeaker(AbstractVoiceSpeaker):
+    def __init__(self, name: str, uuid: str, styles: dict) -> None:
+        super().__init__(name, styles)
+        self.uuid = uuid
+
 class AIVoiceVoiceSpeaker(AbstractVoiceSpeaker):
     def __init__(self, name:str, styles:dict):
         super().__init__(name, styles)

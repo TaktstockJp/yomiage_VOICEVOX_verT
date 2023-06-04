@@ -3,7 +3,7 @@ import clr
 import json
 from abc import ABCMeta, abstractmethod
 from for_developer.discordbot_setting import *
-from for_developer.voice_speaker import AbstractVoiceSpeaker, VoiceVoxVoiceSpeaker, AIVoiceVoiceSpeaker, VoiceStyle
+from for_developer.voice_speaker import *
 
 class AbstractVoiceGenerator(metaclass=ABCMeta):
     def __init__(self,
@@ -177,13 +177,60 @@ class VoiceVoxVoiceGenerator(AbstractVoiceGenerator):
 
         # wavファイルの生成
         os.system(command2)
+
+class CoeiroinkV2VoiceGenerator(AbstractVoiceGenerator):
+    def __init__(self):
+        super().__init__("COEIROINKv2", 0.5, 2.0, 1.2, -0.15, 0.15, 0.0, 0.0, 2.0, 1.0, 0.0, 2.0, 1.0)
+        try:
+            # VOICEVOX（あるいは互換ソフト）から、話者の一覧をJsonで取得する
+            command = bat_speakers_cv2 + ' 50032'
+            os.system(command)
+
+            #Jsonを解析して話者の情報を動的に取得する
+            print("Jsonの解析開始")
+            with open('tmp/speakers.json', 'r', encoding="utf-8_sig") as json_open:
+                json_load = json.load(json_open)
+                for speaker in json_load:
+                    speaker_name = speaker['speakerName']
+                    speaker_uuid = speaker['speakerUuid']
+                    speaker_styles = speaker['styles']
+                    style_dict = {}
+
+                    for style in speaker_styles:
+                        styleObj = VoiceStyle(style['styleName'], str(style['styleId']), self.defaultSpeed, self.defaultPitch, self.defaultIntonation, self.defaultVolume)
+                        style_dict[style['styleName']] = styleObj
+                    self.speakers[speaker_name] = CoeiroinkV2VoiceSpeaker(speaker_name, speaker_uuid, style_dict)
+
+            print("Jsonの解析完了")
+            print(self.getSpeakersStr())
+        except Exception as e:
+            raise e
     
-    def getSpeakerWithStyleId(self, id:str) -> VoiceVoxVoiceSpeaker:
-        for speaker in self.speakers.values():
-            if speaker.hasStyleId(id):
-                return speaker
-        return None
-    
+    def generate(self, character_name:str, style_name:str, query:str):
+        character = self.speakers[character_name]
+        style = character.getStyle(style_name)
+        style_id_str = style.getStyleId()
+        # コマンドの設定
+        command = bat_voice_cv2 + ' 50032'
+
+        # リクエスト用Jsonの生成
+        synthesis_param = {}
+        synthesis_param['speakerUuid'] = character.uuid
+        synthesis_param['styleId'] = int(style_id_str)
+        synthesis_param['text'] = query
+        synthesis_param['speedScale'] = style.speed
+        synthesis_param['volumeScale'] = style.volume
+        synthesis_param['pitchScale'] = style.pitch
+        synthesis_param['intonationScale'] = style.intonation
+        synthesis_param['prePhonemeLength'] = 0.0
+        synthesis_param['postPhonemeLength'] = 0.0
+        synthesis_param['outputSamplingRate'] = 44100
+
+        with open('tmp/query.json', 'w', encoding='utf-8') as f:
+            json.dump(synthesis_param, f, ensure_ascii=False)
+        
+        os.system(command)
+
 class AIVoiceVoiceGenerator(AbstractVoiceGenerator):
     def __init__(self, aivoiceDir:str):
         super().__init__('A.I.VOICE', 0.5, 4.0, 1.2, 0.5, 2.0, 1.0, 0.0, 2.0, 1.0, 0.0, 2.0, 1.0)
