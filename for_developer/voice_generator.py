@@ -226,7 +226,7 @@ class CoeiroinkV2VoiceGenerator(AbstractVoiceGenerator):
         synthesis_param['postPhonemeLength'] = 0.0
         synthesis_param['outputSamplingRate'] = 44100
 
-        with open('tmp/query.json', 'w', encoding='utf-8') as f:
+        with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(synthesis_param, f, ensure_ascii=False)
         
         os.system(command)
@@ -293,6 +293,15 @@ class AIVoiceVoiceGenerator(AbstractVoiceGenerator):
         if self.tts_control.Status == self.statusNotConnected:
             self.tts_control.Connect()
 
+        # マスターコントロールの編集
+        master_control_str = self.tts_control.MasterControl
+        master_control_json = json.loads(master_control_str)
+        sentence_pause_orig = master_control_json['SentencePause']
+        master_control_json['SentencePause'] = 0
+        master_control_str = json.dumps(master_control_json, ensure_ascii=False)
+        self.tts_control.MasterControl = master_control_str
+
+        # ボイスプリセットの編集
         character = self.speakers[character_name]
         style = character.getStyle(style_name)
         style_str = style.getStyleId()
@@ -314,3 +323,10 @@ class AIVoiceVoiceGenerator(AbstractVoiceGenerator):
         self.tts_control.CurrentVoicePresetName = character_name
         self.tts_control.SetVoicePreset(presetEdited)
         self.tts_control.SaveAudioToFile(".\\tmp\\tmp_voice.wav")
+
+        # マスターコントロールを元に戻す
+        master_control_str = self.tts_control.MasterControl
+        master_control_json = json.loads(master_control_str)
+        master_control_json['SentencePause'] = sentence_pause_orig
+        master_control_str = json.dumps(master_control_json, ensure_ascii=False)
+        self.tts_control.MasterControl = master_control_str
