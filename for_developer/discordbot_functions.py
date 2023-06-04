@@ -163,6 +163,10 @@ class room_information():
             
         # 音声の再生
         for item in re.split('\n|;', sentence):
+            # 空白の場合無視
+            if not item:
+                continue
+
             # word_dictに含まれる場合は置換する
             for key in self.word_dict.keys():
                 item = item.replace(key, self.word_dict[key])
