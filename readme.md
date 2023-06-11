@@ -25,31 +25,27 @@ python読める＆python実行できる人向けです。
 
 1. **readme.md**
    - これです。使い方など書いているのでお読みください。
-2. **readme.html**
+1. **readme.html**
    - exe版を利用する場合はこちらをお読みください
-3. **前バージョンからの移行方法.txt**
+1. **前バージョンからの移行方法.txt**
    - 以前のバージョンを使っていた場合はこれを参考にしてデータ（単語帳など）を引き継いでください
-4. **discordbot.exe**
+1. **discordbot.exe**
    - 実行ファイル
-5. **discordbot.py**
+1. **discordbot.py**
    - コマンドプロンプトから実行する場合はこちらを使ってください
-6. **setting.ini**
+1. **setting.ini**
    - 各種設定ファイルです。今のところ「Botのトークン」「使用するソフトウェアの名称と使用するポート番号の組」「A.I.VOICEを使用するかどうか」「デフォルト話者とスタイルの設定」「データファイルの場所」を設定できます。
-7. **command_list.html**
+1. **command_list.html**
    - 実装されているコマンドの確認
-8. **Synthax_setting.csv**
+1. **Synthax_setting.csv**
    - コマンドおよびコメントの先頭の文字を設定するファイル
-9. **for_developer**
+1. **for_developer**
    - ソースファイル
-10. **data**
+1. **data**
    - 単語帳などが保存されるファイル。開く必要はあまりないです。
-11. **get_speakers_from_VOICEVOX.bat**
-   - VOICEVOXから話者の情報を取得するbatファイル。通常は編集する必要はありません。
-12. **output_json_from_VOICEVOX.bat**
-   - VOICEVOXでjsonファイルを作成するbatファイル。通常は編集する必要はありません。
-13. **output_voice_from_VOICEVOX.bat**
-   - VOICEVOXで音声を作成するbatファイル。通常は編集する必要はありません。
-14. **tmp**
+1. **bat**
+   - 各種バッチファイルが格納されたディレクトリ。通常は編集する必要はありません。
+1. **tmp**
    - 一時的に出力されるファイル（VOICEVOXで出力した音声ファイル等）が保存されます。開く必要は全くないです。
 
 ## 注意

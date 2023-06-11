@@ -1,10 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+
 20220902以前の変更は[フォーク元のリポジトリ](https://github.com/kamimiya/yomiage_VOICEVOX)を参照してください。
 
-## 20220604
+## 20230611
+### Fixed
+入退室時の読み上げの際、ニックネームではなく新方式のユーザー名が読み上げられる不具合の修正
+
+## 20230604
 ### Added
-- COEIROINK対応
+- COEIROINKv2対応
 
 ### Fixed
 - A.I.VOICEで読み上げるときに絵文字のみをチャットすると読み上げがおかしくなる不具合の修正
@@ -14,7 +19,7 @@ All notable changes to this project will be documented in this file.
 - setting.iniの書式変更（CoeiroinkV2 Settingセクションの追加）
 - 更新履歴をCHANGELOG.mdに分離
 
-## 20220603
+## 20230603
 ### Fixed
 - 使用しない設定のソフトのデータが起動時に消去される不具合の修正
 
