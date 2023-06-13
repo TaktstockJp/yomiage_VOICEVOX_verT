@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 20220902以前の変更は[フォーク元のリポジトリ](https://github.com/kamimiya/yomiage_VOICEVOX)を参照してください。
 
+## 20230613
+### Fixed
+デフォルトスタイルが利用できない時に読み上げが行われなくなる不具合の修正
+
 ## 20230611
 ### Fixed
 入退室時の読み上げの際、ニックネームではなく新方式のユーザー名が読み上げられる不具合の修正

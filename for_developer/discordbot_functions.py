@@ -119,9 +119,11 @@ class room_information():
             else:
                 self.generators[self.default_generator].generate(self.default_speaker, self.default_style, sentence)
         except KeyError:
-            # ユーザーが指定しているスタイルが辞書に存在しない場合
-            self.generators[self.default_generator].generate(self.default_speaker, self.default_style, sentence)
-            traceback.print_exc()
+            # ユーザーが指定しているスタイル、またはデフォルトのスタイルが辞書に存在しない場合
+            alt_generator: AbstractVoiceGenerator = self.generators[next(iter(self.generators))]
+            alt_speaker: AbstractVoiceSpeaker = alt_generator.speakers[next(iter(alt_generator.speakers))]
+            alt_style: VoiceStyle = alt_speaker.styles[next(iter(alt_speaker.styles))]
+            alt_generator.generate(alt_speaker.name, alt_style.styleName, sentence)
         except Exception as e:
             print(type(e))
             traceback.print_exc()
