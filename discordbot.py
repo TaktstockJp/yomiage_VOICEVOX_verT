@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix="$", intents=intents)
 tree = bot.tree
 
 # スラッシュコマンドの設定
-group = app_commands.Group(name=slash_Synthax, description='VoiceBot用のコマンドです')
+group = app_commands.Group(name=slash_syntax, description='VoiceBot用のコマンドです')
 
 # チャンネル情報保存用
 room_info_tmp = room_information()
@@ -102,11 +102,11 @@ async def on_message(message):
     guild = bot.get_guild(room_info_tmp.guild_id)
     try:
         # メッセージがコメントアウトされている場合は無視する
-        if message.content.startswith(comment_Synthax):
+        if message.content.startswith(comment_syntax):
             return
         
         # 他のボットのコマンドの場合無視
-        for synthax in other_bots_Synthax:
+        for synthax in other_bots_syntax:
             if message.content.startswith(synthax):
                 return
 
@@ -121,7 +121,7 @@ async def on_message(message):
             return
 
         # コマンド入力時の処理
-        if message.content.startswith(command_Synthax):
+        if message.content.startswith(command_syntax):
             await room_info_tmp.execute_commands(message)
             return
         

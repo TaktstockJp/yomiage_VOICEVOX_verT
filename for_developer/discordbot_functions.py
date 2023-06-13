@@ -384,8 +384,8 @@ class room_information():
             command_tmp = message_tmp.content.split()
             # 要素数エラー
             if len(command_tmp) != 5:
-                await message_tmp.channel.send(comment_Synthax + command_chg_voice_setting + " 話者名 スタイル名 変更するパラメータ 変更後の値 と入力してください")
-                await message_tmp.channel.send(comment_Synthax + "変更するパラメータには speed, pitch, intonation, volume が指定できます")
+                await message_tmp.channel.send(comment_syntax + command_chg_voice_setting + " 話者名 スタイル名 変更するパラメータ 変更後の値 と入力してください")
+                await message_tmp.channel.send(comment_syntax + "変更するパラメータには speed, pitch, intonation, volume が指定できます")
                 return
             else:
                 await message_tmp.channel.send(await self.execute_chg_voice_setting(command_tmp[1], command_tmp[2], command_tmp[3], command_tmp[4]))
@@ -401,7 +401,7 @@ class room_information():
             # 2つめの要素がintでなければエラー
             try:
                 self.flag_valid_dict[command_word_count_limit] = int(command_tmp[1])
-                await message_tmp.channel.send(comment_Synthax + "文字数制限を"+command_tmp[1]+'に設定したのだ')            #設定の更新
+                await message_tmp.channel.send(comment_syntax + "文字数制限を"+command_tmp[1]+'に設定したのだ')            #設定の更新
                 output_data(self.flist_file, self.flag_valid_dict)
             except ValueError:
                 await message_tmp.channel.send(comment_dict['message_err'])
@@ -410,7 +410,7 @@ class room_information():
         # 各種設定の変更
         elif message_tmp.content in self.flag_valid_dict.keys():
             self.flag_valid_dict[message_tmp.content] = not self.flag_valid_dict[message_tmp.content]
-            await message_tmp.channel.send(comment_Synthax + flag_name_dict[message_tmp.content] + "を" + bool_name_dict[self.flag_valid_dict[message_tmp.content]] + "にしたのだ")
+            await message_tmp.channel.send(comment_syntax + flag_name_dict[message_tmp.content] + "を" + bool_name_dict[self.flag_valid_dict[message_tmp.content]] + "にしたのだ")
             #設定の更新
             output_data(self.flist_file, self.flag_valid_dict)
             # inform_tmp_roomの設定を反映させる
@@ -539,19 +539,19 @@ class room_information():
         if word and how_to_read:
             self.word_dict[word] = how_to_read
             revise_dict(self.word_dict, self.wlist_file)
-            return comment_Synthax + word + "を" + how_to_read + "として追加しました"
+            return comment_syntax + word + "を" + how_to_read + "として追加しました"
         else:
-            return comment_Synthax + "単語か読み仮名のどちらかが指定されていません"
+            return comment_syntax + "単語か読み仮名のどちらかが指定されていません"
     
     async def execute_wlist_delete(self, word:str) -> str:
         if word and word in self.word_dict.keys():
             self.word_dict.pop(word)
             revise_dict(self.word_dict, self.wlist_file)
-            return comment_Synthax + word + "を削除しました"
+            return comment_syntax + word + "を削除しました"
         elif word:
-            return comment_Synthax + word + "は読み仮名が指定されていません"
+            return comment_syntax + word + "は読み仮名が指定されていません"
         else:
-            return comment_Synthax + "単語が指定されていません"
+            return comment_syntax + "単語が指定されていません"
     
     async def execute_wlist_show(self) -> discord.File:
         return discord.File(self.wlist_file)
@@ -559,12 +559,12 @@ class room_information():
     async def execute_chg_voice_setting(self, software_name:str, speaker_name:str, style_name:str, parameter_name:str, value:str) -> str:
         # 引数のどれかが空かNoneの場合エラー
         if not software_name or not speaker_name or not style_name or not parameter_name or not value:
-            return comment_Synthax + command_chg_voice_setting + " ソフトウェア名 話者名 スタイル名 変更するパラメータ 変更後の値 と入力してください\n" +\
-                   comment_Synthax + "変更するパラメータには speed, pitch, intonation, volume が指定できます"
+            return comment_syntax + command_chg_voice_setting + " ソフトウェア名 話者名 スタイル名 変更するパラメータ 変更後の値 と入力してください\n" +\
+                   comment_syntax + "変更するパラメータには speed, pitch, intonation, volume が指定できます"
         
         # ソフトウェア名チェック
         if not software_name in self.generators.keys():
-            return comment_Synthax + "指定されたソフトウェア名が存在しません。"
+            return comment_syntax + "指定されたソフトウェア名が存在しません。"
 
         # 各種状態の変更
         try:
@@ -572,15 +572,15 @@ class room_information():
             generator = self.generators[software_name]
             value_tmp = '{:3}'.format(value)
             if parameter_name.lower() == 'speed':
-                ret = comment_Synthax + generator.setSpeed(speaker_name, style_name, float(value_tmp))
+                ret = comment_syntax + generator.setSpeed(speaker_name, style_name, float(value_tmp))
             elif parameter_name.lower() == 'pitch':
-                ret = comment_Synthax + generator.setPitch(speaker_name, style_name, float(value_tmp))
+                ret = comment_syntax + generator.setPitch(speaker_name, style_name, float(value_tmp))
             elif parameter_name.lower() == 'intonation':
-                ret = comment_Synthax + generator.setIntonation(speaker_name, style_name, float(value_tmp))
+                ret = comment_syntax + generator.setIntonation(speaker_name, style_name, float(value_tmp))
             elif parameter_name.lower() == 'volume':
-                ret = comment_Synthax + generator.setVolume(speaker_name, style_name, float(value_tmp))
+                ret = comment_syntax + generator.setVolume(speaker_name, style_name, float(value_tmp))
             else:
-                ret = comment_Synthax + "変更するパラメータには speed, pitch, intonation, volume を指定してください"
+                ret = comment_syntax + "変更するパラメータには speed, pitch, intonation, volume を指定してください"
             self.writeStyleSettingDict()
             return ret
         except ValueError:
