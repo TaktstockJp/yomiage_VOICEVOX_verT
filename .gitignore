@@ -1,0 +1,20 @@
+# 秘密情報を含むローカル設定
+config.toml
+
+# 実行時に生成されるデータ
+*.db
+*.db-shm
+*.db-wal
+logs/
+
+# ビルド成果物と同梱バイナリ
+build/
+dist/
+ffmpeg/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/

@@ -1,0 +1,43 @@
+# このファイルを config.toml という名前でコピーして編集してください。
+# config.toml にはトークンなどの秘密情報が入るため、Git にはコミットされません。
+
+[discord]
+token = ""
+command_prefix = "!"
+comment_prefix = ">"
+ignore_prefixes = ["$", "?"]
+
+[default_voice]
+engine = "VOICEVOX"
+speaker = "ずんだもん"
+style = "あまあま"
+
+[ffmpeg]
+path = ""        # 空なら exe と同じ場所の ffmpeg/ffmpeg.exe → PATH の順で探す
+
+# VOICEVOX と同じ API を持つソフトは、[[engines.voicevox]] を増やして登録できます。
+[[engines.voicevox]]
+name = "VOICEVOX"
+port = 50021
+
+# [[engines.voicevox]]
+# name = "AivisSpeech"
+# port = 10101
+
+[engines.coeiroink]
+enabled = false
+port = 50032
+
+[engines.aivoice]
+enabled = false
+dir = 'C:\Program Files\AI\AIVoice\AIVoiceEditor\'
+
+[engines.voicepeak]
+enabled = false
+exe = 'C:\Program Files\VOICEPEAK\voicepeak.exe'
+
+[engines.voisona]
+enabled = false
+port = 32766
+user = ""        # VoiSona に登録したメールアドレス
+password = ""    # VoiSona の設定画面で決めた API 用のパスワード

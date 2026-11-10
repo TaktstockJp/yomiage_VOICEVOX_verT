@@ -1,7 +1,0 @@
-!inform_someone_come,True
-!time_signal,True
-!read_name,False
-!number_of_people,True
-!auto_leave,False
-!chg_speed,1.2
-!word_count_limit,100.0
