@@ -1,0 +1,37 @@
+MIT License
+
+Copyright (c) 2023-2026 TaktstockJp (タクト)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+
+例外 / Exception
+
+src/yomiage/messages.py の「フォーク元由来の文面」の区画は、かみみや 氏の
+yomiage_VOICEVOX (https://github.com/kamimiya/yomiage_VOICEVOX) から引き継いだ
+ものであり、上記の MIT License の対象外です。この区画には、フォーク元の README の
+「利用規約的なやつ」の条件が適用されます。
+
+The section labeled "フォーク元由来の文面" in src/yomiage/messages.py was carried
+over from kamimiya's yomiage_VOICEVOX and is not covered by the MIT License above.
+It remains subject to the terms stated in the upstream README.
+
+同梱されるサードパーティのソフトウェアのライセンスは THIRD_PARTY_NOTICES.md を
+参照してください。

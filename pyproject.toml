@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "yomiage"
 description = "テキストチャットを TTS ソフトで読み上げる Discord Bot"
-readme = "readme.md"
+readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dynamic = ["version"]
 dependencies = [
