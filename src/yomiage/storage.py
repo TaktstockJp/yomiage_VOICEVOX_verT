@@ -6,6 +6,8 @@ import sqlite3
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
+from .tts.base import VoiceSelection
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS user_voices (
     user_id INTEGER PRIMARY KEY,
@@ -30,13 +32,6 @@ CREATE TABLE IF NOT EXISTS settings (
     value INTEGER NOT NULL
 );
 """
-
-
-@dataclass(frozen=True)
-class VoiceSelection:
-    engine: str
-    speaker: str
-    style: str
 
 
 @dataclass(frozen=True)

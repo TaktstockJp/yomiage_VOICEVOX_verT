@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from yomiage.storage import Settings, Storage, VoiceSelection
+from yomiage.storage import Settings, Storage
+from yomiage.tts.base import VoiceSelection
 
 VOICE = VoiceSelection("VOICEVOX", "ずんだもん", "ノーマル")
 OTHER_VOICE = VoiceSelection("VOICEVOX", "ずんだもん", "あまあま")
