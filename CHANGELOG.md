@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 20220902以前の変更は[フォーク元のリポジトリ](https://github.com/kamimiya/yomiage_VOICEVOX)を参照してください。
 
-## 0.1.0（未リリース）
+## 0.1.0（2026-11-10）
 全体を作り直したバージョンです。旧バージョンの設定とデータは引き継げません。
 
 ### Added
