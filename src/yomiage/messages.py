@@ -145,3 +145,69 @@ ERROR_PRIVILEGED_INTENTS = (
     "MESSAGE CONTENT INTENT と SERVER MEMBERS INTENT を有効にしてください。"
 )
 ERROR_LOGIN = "Discord Bot のトークンが間違っているか、config.toml に入力されていません。"
+ERROR_NO_ENGINE = "利用できる TTS ソフトがありません。TTS ソフトを起動してから、もう一度実行してください。"
+
+NOT_IN_VOICE = "先にボイスチャンネルに入ってほしいのだ"
+NOT_CONNECTED = "ボイスチャンネルに接続していないのだ"
+CONNECT_FAILED = "ボイスチャンネルに接続できなかったのだ"
+STOPPED = "読み上げを止めたのだ"
+UNEXPECTED_ERROR = "エラーが起きたのだ。ログを確認してほしいのだ"
+WORD_NOT_FOUND = "その単語は登録されていないのだ"
+
+
+def show_speakers_hint(command_prefix: str) -> str:
+    return f"{command_prefix}show_speakers で、使えるソフトと話者とスタイルを確認してほしいのだ"
+
+
+def word_added(word: str, reading: str) -> str:
+    return f"「{word}」を「{reading}」と読むようにしたのだ"
+
+
+def word_deleted(word: str) -> str:
+    return f"「{word}」を単語帳から消したのだ"
+
+
+def reload_failed(names: list[str]) -> str:
+    return f"次のソフトは更新できなかったのだ：{'、'.join(names)}"
+
+
+def param_not_found(names: list[str]) -> str:
+    return f"指定できるパラメータは {', '.join(names)} なのだ"
+
+
+def param_out_of_range(param: str, minimum: float, maximum: float) -> str:
+    return f"{param} は {minimum} から {maximum} の間で指定してほしいのだ"
+
+
+def param_changed(param: str, value: float) -> str:
+    return f"{param} を {value} に変更したのだ"
+
+
+def help_text(prefix: str) -> str:
+    return (
+        "```\n"
+        "■基本コマンド\n"
+        f"{prefix}join: BOTをボイスチャンネルに呼ぶ\n"
+        f"{prefix}leave: BOTをボイスチャンネルから退出させる\n"
+        f"{prefix}stop: 再生中の音声と、待っている読み上げをすべて止める\n"
+        f"{prefix}hello: バージョン情報の確認\n"
+        f"{prefix}help: このヘルプの表示\n\n"
+        "■辞書コマンド\n"
+        f"{prefix}wlist add A B: AをBと読ませる\n"
+        f"{prefix}wlist delete A: Aの登録を消す\n"
+        f"{prefix}wlist show: 登録内容をCSVファイルで確認する\n\n"
+        "■調声コマンド\n"
+        f"{prefix}chg_my_voice 話者 スタイル [ソフト]: 自分の声を変更する\n"
+        f"{prefix}chg_voice_setting ソフト 話者 スタイル パラメータ 値: スタイルごとの調整\n"
+        "パラメータは speed pitch intonation volume など。指定できる範囲はソフトごとに異なります\n"
+        f"{prefix}show_speakers: 使えるソフトと話者とスタイルの確認\n"
+        f"{prefix}reload: 話者の一覧を取り直す\n\n"
+        "■各種設定\n"
+        f"{prefix}inform_someone_come: 入退出の通知のオンオフ\n"
+        f"{prefix}number_of_people: 在室人数チェックのオンオフ\n"
+        f"{prefix}auto_leave: 無人になったときの自動退出のオンオフ\n"
+        f"{prefix}time_signal: 時報のオンオフ\n"
+        f"{prefix}word_count_limit N: 文字数制限の設定\n"
+        f"{prefix}show_setting: 現在の設定の確認\n"
+        "```"
+    )
