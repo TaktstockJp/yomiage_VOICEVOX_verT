@@ -39,6 +39,7 @@ class VoiceCog(commands.Cog):
             else:
                 await session.voice_client.move_to(voice_state.channel)
                 session.text_channel = ctx.channel
+                _log.info("VCを移動しました: %s（読み上げ対象: %s）", voice_state.channel.name, ctx.channel.name)
         except (asyncio.TimeoutError, discord.ClientException) as error:
             _log.warning("ボイスチャンネルに接続できませんでした: %r", error)
             await ctx.send(messages.CONNECT_FAILED)

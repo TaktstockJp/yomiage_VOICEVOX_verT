@@ -1,6 +1,9 @@
 import asyncio
+import logging
 import threading
 from collections.abc import Awaitable, Callable
+
+import pytest
 
 from yomiage.reading.session import ReadingSession, Utterance
 from yomiage.tts.base import (
@@ -224,6 +227,37 @@ def test_unregistered_engine_is_skipped() -> None:
         h.vc.finish()
 
     assert run(scenario).vc.played == ["有効".encode()]
+
+
+def test_reading_is_logged_without_the_message_text(caplog: pytest.LogCaptureFixture) -> None:
+    async def scenario(h: Harness) -> None:
+        h.say("秘密の発言")
+        await h.wait_playing("秘密の発言")
+        h.vc.finish()
+        await h.settle()
+
+    with caplog.at_level(logging.INFO, logger="yomiage.reading.session"):
+        run(scenario)
+
+    messages = [record.getMessage() for record in caplog.records]
+    assert any("音声を合成しました: Fake / 話者 / スタイル（5 文字" in message for message in messages)
+    assert any("再生を開始しました" in message for message in messages)
+    assert "再生を終了しました" in messages
+    assert not any("秘密の発言" in message for message in messages)
+
+
+def test_stop_logs_the_number_of_discarded_utterances(caplog: pytest.LogCaptureFixture) -> None:
+    async def scenario(h: Harness) -> None:
+        h.engine.gates["一"] = asyncio.Event()
+        h.say("一", "二", "三")
+        await h.wait_requested(1)
+        with caplog.at_level(logging.INFO, logger="yomiage.reading.session"):
+            h.session.stop()
+        h.engine.gates["一"].set()
+
+    run(scenario)
+
+    assert any("待機中の 2 件を破棄" in record.getMessage() for record in caplog.records)
 
 
 def test_close_stops_current_playback() -> None:

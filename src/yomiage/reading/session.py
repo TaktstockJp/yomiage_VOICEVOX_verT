@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -72,17 +73,22 @@ class ReadingSession:
 
     def stop(self) -> None:
         """再生中の音声と、待っている読み上げをすべて破棄する。"""
-        self._generation += 1
-        _clear(self._text_queue)
-        _clear(self._audio_queue)
-        self.voice_client.stop()
+        waiting = self._text_queue.qsize() + self._audio_queue.qsize()
+        self._discard_all()
+        _log.info("読み上げを停止しました（待機中の %d 件を破棄）", waiting)
 
     async def close(self) -> None:
         for task in self._tasks:
             task.cancel()
         await asyncio.gather(*self._tasks, return_exceptions=True)
         self._tasks = []
-        self.stop()
+        self._discard_all()
+
+    def _discard_all(self) -> None:
+        self._generation += 1
+        _clear(self._text_queue)
+        _clear(self._audio_queue)
+        self.voice_client.stop()
 
     async def _synthesis_worker(self) -> None:
         while True:
@@ -104,7 +110,19 @@ class ReadingSession:
         engine = self._registry.get(voice.engine)
         if engine is None:
             raise TTSError(f"エンジンが登録されていません: {voice.engine}")
-        return await engine.synthesize(utterance.text, voice.speaker, voice.style, utterance.params)
+        started = time.perf_counter()
+        wav = await engine.synthesize(utterance.text, voice.speaker, voice.style, utterance.params)
+        # 発言の内容は利用者のプライバシーに関わるので、本文は DEBUG レベルでだけ記録する
+        _log.info(
+            "音声を合成しました: %s / %s / %s（%d 文字、%.2f 秒）",
+            voice.engine,
+            voice.speaker,
+            voice.style,
+            len(utterance.text),
+            time.perf_counter() - started,
+        )
+        _log.debug("合成した文: %s", utterance.text)
+        return wav
 
     async def _playback_worker(self) -> None:
         while True:
@@ -128,4 +146,6 @@ class ReadingSession:
             loop.call_soon_threadsafe(finished.set)
 
         self.voice_client.play(self._source_factory(clip.wav), after=after)
+        _log.info("再生を開始しました（%d バイト）", len(clip.wav))
         await finished.wait()
+        _log.info("再生を終了しました")

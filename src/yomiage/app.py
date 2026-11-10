@@ -114,15 +114,18 @@ class YomiageBot(commands.Bot):
         )
         session.start()
         self.sessions[voice_client.guild.id] = session
+        _log.info("VCに接続しました: %s（読み上げ対象: %s）", voice_client.channel.name, text_channel.name)
         return session
 
     async def close_session(self, guild_id: int) -> None:
         session = self.sessions.pop(guild_id, None)
         if session is None:
             return
+        channel_name = session.voice_client.channel.name
         await session.close()
         if session.voice_client.is_connected():
             await session.voice_client.disconnect()
+        _log.info("VCから切断しました: %s", channel_name)
 
     def voice_for(self, user_id: int | None) -> VoiceSelection:
         """利用者の声を返す。使えない場合はデフォルトの声、それもなければ最初の声を返す。"""
@@ -138,6 +141,11 @@ class YomiageBot(commands.Bot):
 
     async def on_ready(self) -> None:
         _log.info("%s としてログインしました", self.user)
+
+    async def on_command(self, ctx: commands.Context[YomiageBot]) -> None:
+        # 引数には発言の内容が含まれることがあるので、コマンド名だけを記録する
+        kind = "スラッシュ" if ctx.interaction else "プレフィックス"
+        _log.info("コマンドを実行します: %s（%s、ユーザーID %s）", ctx.command.qualified_name, kind, ctx.author.id)
 
     async def on_command_error(self, ctx: commands.Context[YomiageBot], error: Exception) -> None:
         while isinstance(error, _ERROR_WRAPPERS):

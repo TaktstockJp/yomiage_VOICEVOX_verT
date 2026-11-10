@@ -1,6 +1,7 @@
 """Discord に接続せずに確認できる、コマンド定義とイベント処理のテスト。"""
 
 import asyncio
+import logging
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
@@ -60,6 +61,20 @@ def test_wlist_has_subcommands() -> None:
     options = commands_payload()["wlist"]["options"]
 
     assert {option["name"] for option in options} == {"add", "delete", "show"}
+
+
+@pytest.mark.parametrize(("interaction", "kind"), [(None, "プレフィックス"), (object(), "スラッシュ")])
+def test_command_execution_is_logged(caplog: pytest.LogCaptureFixture, interaction: object, kind: str) -> None:
+    ctx = SimpleNamespace(
+        command=SimpleNamespace(qualified_name="wlist add"),
+        interaction=interaction,
+        author=SimpleNamespace(id=5),
+    )
+
+    with caplog.at_level(logging.INFO, logger="yomiage.app"):
+        asyncio.run(YomiageBot.on_command(None, ctx))
+
+    assert caplog.messages == [f"コマンドを実行します: wlist add（{kind}、ユーザーID 5）"]
 
 
 def test_help_fits_in_one_message() -> None:
