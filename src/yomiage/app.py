@@ -22,10 +22,13 @@ from .config import Config, ConfigError, load_config
 from .logs import setup_logging
 from .reading.session import ReadingSession, TextTarget, Utterance
 from .storage import Storage
+from .tts.aivoice import AiVoiceEngine
 from .tts.base import TTSEngine, VoiceSelection
 from .tts.coeiroink import CoeiroinkEngine
 from .tts.registry import EngineRegistry
+from .tts.voicepeak import VoicepeakEngine
 from .tts.voicevox import VoicevoxEngine
+from .tts.voisona import VoisonaEngine
 
 _log = logging.getLogger(__name__)
 
@@ -62,6 +65,13 @@ def _build_engines(config: Config, session: aiohttp.ClientSession) -> list[TTSEn
     ]
     if config.engines.coeiroink.enabled:
         engines.append(CoeiroinkEngine(config.engines.coeiroink.port, session))
+    if config.engines.aivoice.enabled:
+        engines.append(AiVoiceEngine(config.engines.aivoice.dir))
+    if config.engines.voicepeak.enabled:
+        engines.append(VoicepeakEngine(config.engines.voicepeak.exe))
+    if config.engines.voisona.enabled:
+        voisona = config.engines.voisona
+        engines.append(VoisonaEngine(voisona.port, voisona.user, voisona.password, session))
     return engines
 
 
