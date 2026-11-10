@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yomiage"
+description = "テキストチャットを TTS ソフトで読み上げる Discord Bot"
+readme = "readme.md"
+requires-python = ">=3.12,<3.13"
+dynamic = ["version"]
+dependencies = [
+    "discord.py[voice]>=2.7,<2.8",
+    # davey 0.2 は discord.py 2.7 と組み合わせると DAVE セッションが準備完了にならない
+    "davey>=0.1.7,<0.2",
+    "aiohttp>=3.9",
+    "pythonnet>=3.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pyinstaller>=6",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "yomiage.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
