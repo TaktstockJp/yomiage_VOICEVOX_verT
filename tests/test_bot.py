@@ -11,11 +11,12 @@ from yomiage.app import YomiageBot
 from yomiage.cogs.dictionary import words_to_csv
 from yomiage.cogs.notify import NotifyCog
 from yomiage.cogs.settings import format_settings
-from yomiage.cogs.speaker import build_choices, format_speakers
+from yomiage.cogs.speaker import SpeakerCog, build_choices, format_speakers
 from yomiage.cogs.voice import VoiceCog
 from yomiage.config import Config, DefaultVoiceConfig, DiscordConfig, EnginesConfig, FfmpegConfig
 from yomiage.storage import Settings, Storage
-from yomiage.tts.base import Speaker, Style
+from yomiage.tts.base import Speaker, Style, TTSEngine, VoiceParams, VoiceSelection
+from yomiage.tts.registry import EngineRegistry
 
 CONFIG = Config(DiscordConfig(token="x"), DefaultVoiceConfig(), FfmpegConfig(), EnginesConfig())
 
@@ -49,11 +50,10 @@ def test_slash_commands_are_guild_only() -> None:
 
 
 def test_voice_arguments_have_autocomplete() -> None:
-    options = {o["name"]: o for o in commands_payload()["chg_my_voice"]["options"]}
+    options = commands_payload()["chg_my_voice"]["options"]
 
-    assert all(options[name]["autocomplete"] for name in ("speaker", "style", "engine"))
-    assert options["speaker"]["required"] is True
-    assert options["engine"]["required"] is False
+    assert [option["name"] for option in options] == ["engine", "speaker", "style"]
+    assert all(option["autocomplete"] and option["required"] for option in options)
 
 
 def test_wlist_has_subcommands() -> None:
@@ -69,6 +69,66 @@ def test_help_fits_in_one_message() -> None:
 def test_build_choices_filters_dedupes_and_limits() -> None:
     assert [c.value for c in build_choices(["Abc", "abd", "x", "Abc"], "AB")] == ["Abc", "abd"]
     assert len(build_choices([str(i) for i in range(50)], "")) == 25
+
+
+class StubEngine(TTSEngine):
+    param_specs = {}
+
+    def __init__(self, name: str, *speakers: Speaker) -> None:
+        super().__init__(name)
+        self.available = speakers
+
+    async def reload(self) -> None:
+        self._speakers = self.available
+
+    async def synthesize(self, text: str, speaker: str, style: str, params: VoiceParams) -> bytes:
+        return b""
+
+
+def speaker_cog() -> tuple[SpeakerCog, SimpleNamespace]:
+    registry = EngineRegistry()
+    many = [Speaker(f"話者{i}", (Style("普通", i),)) for i in range(30)]
+    for engine in (StubEngine("多い", *many), StubEngine("少ない", Speaker("ずんだもん", (Style("あまあま", 1),)))):
+        assert asyncio.run(registry.add(engine))
+    storage = Storage(":memory:")
+    bot = SimpleNamespace(registry=registry, storage=storage, config=CONFIG)
+    return SpeakerCog(bot), bot
+
+
+def test_speaker_candidates_are_limited_to_the_selected_engine() -> None:
+    cog, bot = speaker_cog()
+    interaction = SimpleNamespace(namespace=SimpleNamespace(engine="少ない", speaker=None))
+
+    choices = asyncio.run(cog.speaker_autocomplete(interaction, ""))
+
+    assert [choice.value for choice in choices] == ["ずんだもん"]
+    bot.storage.close()
+
+
+def test_chg_my_voice_uses_the_given_engine() -> None:
+    cog, bot = speaker_cog()
+    ctx = SimpleNamespace(author=SimpleNamespace(id=5), send=AsyncMock())
+
+    asyncio.run(SpeakerCog.chg_my_voice.callback(cog, ctx, "少ない", "ずんだもん", "あまあま"))
+
+    assert bot.storage.user_voice(5) == VoiceSelection("少ない", "ずんだもん", "あまあま")
+    ctx.send.assert_awaited_once_with(messages.VOICE_CHANGED)
+    bot.storage.close()
+
+
+@pytest.mark.parametrize(
+    ("engine", "speaker", "expected"),
+    [("存在しない", "ずんだもん", messages.ENGINE_NOT_FOUND), ("多い", "ずんだもん", messages.VOICE_NOT_FOUND)],
+)
+def test_chg_my_voice_rejects_unknown_voice(engine: str, speaker: str, expected: str) -> None:
+    cog, bot = speaker_cog()
+    ctx = SimpleNamespace(author=SimpleNamespace(id=5), send=AsyncMock())
+
+    asyncio.run(SpeakerCog.chg_my_voice.callback(cog, ctx, engine, speaker, "あまあま"))
+
+    assert bot.storage.user_voice(5) is None
+    assert ctx.send.await_args.args[0].startswith(expected)
+    bot.storage.close()
 
 
 def test_format_speakers() -> None:

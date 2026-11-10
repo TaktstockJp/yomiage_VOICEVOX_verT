@@ -197,7 +197,7 @@ def help_text(prefix: str) -> str:
         f"{prefix}wlist delete A: Aの登録を消す\n"
         f"{prefix}wlist show: 登録内容をCSVファイルで確認する\n\n"
         "■調声コマンド\n"
-        f"{prefix}chg_my_voice 話者 スタイル [ソフト]: 自分の声を変更する\n"
+        f"{prefix}chg_my_voice ソフト 話者 スタイル: 自分の声を変更する\n"
         f"{prefix}chg_voice_setting ソフト 話者 スタイル パラメータ 値: スタイルごとの調整\n"
         "パラメータは speed pitch intonation volume など。指定できる範囲はソフトごとに異なります\n"
         f"{prefix}show_speakers: 使えるソフトと話者とスタイルの確認\n"

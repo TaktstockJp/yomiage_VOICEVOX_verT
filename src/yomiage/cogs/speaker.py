@@ -52,16 +52,16 @@ class SpeakerCog(commands.Cog):
         return messages.show_speakers_hint(self.bot.config.discord.command_prefix)
 
     @commands.hybrid_command(name="chg_my_voice", description="自分の声を変更する")
-    @app_commands.describe(speaker="話者", style="スタイル", engine="ソフト（省略できます）")
+    @app_commands.describe(engine="ソフト", speaker="話者", style="スタイル")
     async def chg_my_voice(
         self,
         ctx: commands.Context[YomiageBot],
+        engine: str,
         speaker: str,
         style: str,
-        engine: str | None = None,
     ) -> None:
         registry = self.bot.registry
-        if engine is not None and registry.get(engine) is None:
+        if registry.get(engine) is None:
             await ctx.send(f"{messages.ENGINE_NOT_FOUND}\n{self._hint()}")
             return
         voice = registry.find(speaker, style, engine)
